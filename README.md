@@ -1,6 +1,6 @@
 # CumulativeProspectTheory
 Simulation of decisions under risk using Matplotlib.
-Simuation results can be graphed in the end or real-time along with the simulation itself.
+Results can be graphed in the end or real-time along with the simulation itself.
 
 
 ## Overview
