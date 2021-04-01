@@ -5,8 +5,10 @@ import matplotlib.gridspec as gridspec
 import random
 import statistics  # for median
 
-
+# another new comment for simultaneous commiting across multiple files
 # a new comment that should be pushed to the repository
+
+
 class Outcome(object):
     def __init__(self, *, probability: float, size: float):
         """ set all relevant parameters for the outcome

@@ -38,7 +38,7 @@ env1.create_statistics()
 env1.create_time_statistics()
 
 # run the simulation for 1000 cycles
-env1.cycle(rounds=1000)
+env1.cycle(rounds=100)
 
 # print median values
 print('MEDIAN ALPHA AND BETA:', env1.statistics.time_median_alpha[-1])
