@@ -360,8 +360,8 @@ class ProspectSpawner(object):
         scaled_probabilities = []
         unscaled_sum = sum(unscaled_probabilities)
 
-        scaled_probabilities = map(
-            lambda unscaled_probability: unscaled_probability/unscaled_sum, unscaled_probabilities)
+        scaled_probabilities = list(map(
+            lambda unscaled_probability: unscaled_probability/unscaled_sum, unscaled_probabilities))
 
         # due to pythons float calculation, probabilities sometimes add up to more than one (1.00000000000002)
         # this causes errors and thus has to be controlled for
