@@ -196,25 +196,15 @@ class Individual(object):
         outcomes_of_prospect.sort(key=lambda outcome: outcome.size)
 
         # split the prospect into positive and negative parts
-        negative_sizes = []
-        nonnegative_sizes = []
+        negative_sizes = [0 if outcome.size >=
+                          0 else outcome.size for outcome in outcomes_of_prospect]
+        nonnegative_sizes = [outcome.size if outcome.size >=
+                             0 else 0 for outcome in outcomes_of_prospect]
 
-        negative_probabilities = []
-        nonnegative_probabilities = []
-
-        for outcome in outcomes_of_prospect:
-            negative_probabilities.append(outcome.probability)
-            nonnegative_probabilities.append(outcome.probability)
-
-            # check if outcome is negative or nonnegative
-            if outcome.size < 0:
-
-                negative_sizes.append(outcome.size)
-                nonnegative_sizes.append(0)
-            elif outcome.size >= 0:
-
-                negative_sizes.append(0)
-                nonnegative_sizes.append(outcome.size)
+        negative_probabilities = [
+            outcome.probability for outcome in outcomes_of_prospect]
+        nonnegative_probabilities = [
+            outcome.probability for outcome in outcomes_of_prospect]
 
         # init V+ and V-
         V_negative = 0
@@ -363,15 +353,15 @@ class ProspectSpawner(object):
             target_e = np.random.normal(loc=target_e, scale=self.noisy_sd)
 
         # list for unscaled probabilities of outcomes
-        unscaled_probabilities = []
-        for _ in range(self.n_outcomes):
-            unscaled_probabilities.append(np.random.uniform(low=0.01, high=1))
+        unscaled_probabilities = [np.random.uniform(
+            low=0.01, high=1) for _ in range(self.n_outcomes)]
 
         # scale probabilities to add up to 1
         scaled_probabilities = []
         unscaled_sum = sum(unscaled_probabilities)
-        for element in unscaled_probabilities:
-            scaled_probabilities.append(element/unscaled_sum)
+
+        scaled_probabilities = map(
+            lambda unscaled_probability: unscaled_probability/unscaled_sum, unscaled_probabilities)
 
         # due to pythons float calculation, probabilities sometimes add up to more than one (1.00000000000002)
         # this causes errors and thus has to be controlled for
