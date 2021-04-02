@@ -502,7 +502,7 @@ class Environment(object):
         """create two random prospects for each individual separately and append those to the individuals
         prospects_to_choose_from property
         """
-        # adds two prospects to the prospect_to_decide_on property of the environments individuals
+        # adds two prospects to the prospects_to_choose_from property of the environments individuals
         for individual in self.individuals:
             prospect1 = self.prospect_spawner.generate_prospect()
             prospect2 = self.prospect_spawner.generate_prospect()
@@ -532,13 +532,9 @@ class Environment(object):
     def eliminate(self):
         """remove individuals from the population whose position is behind the barrier
         """
-        survivors = []
-        for individual in self.individuals:
-            if individual.position >= self.barrier.position:
-                survivors.append(individual)
-            else:
-                individual.alive = False
-        self.individuals = survivors
+
+        self.individuals = list(filter(lambda individual: individual.position >=
+                                self.barrier.position, self.individuals))
 
     def reproduce(self):
         """let randomly chosen individuals reproduce until the maximum population size is reached
