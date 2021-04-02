@@ -457,12 +457,12 @@ class Environment(object):
             preferences = self.initial_preferences
         if position is None:
             position = self.initial_individual_position
-        for _ in range(self.initial_size):
-            self.individuals.append(self.create_random_individual(
-                position=self.initial_individual_position, preferences=preferences))
+
+        self.individuals = [self.create_random_individual(
+            position=self.initial_individual_position, preferences=preferences) for _ in range(self.initial_size)]
 
     def create_random_individual(self, position: int = 0, preferences: str = "rational"):
-        """create a individual with random parameters
+        """create an individual with random parameters
 
         Args:
             position (int, optional): the position the individual is spawned at. Defaults to 0.
