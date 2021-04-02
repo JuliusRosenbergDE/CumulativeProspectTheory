@@ -569,7 +569,7 @@ class Environment(object):
             self.statistics.alives.append(individual.alive)
 
     def create_time_statistics(self):
-        """create time statistics from the current state of the environment, by appending the current values to the histoy of values
+        """create time statistics from the current state of the environment, by appending the current values to the history of values
         """
         # time statistics of medians
         self.statistics.time_median_lampda.append(
