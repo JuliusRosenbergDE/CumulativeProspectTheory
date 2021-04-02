@@ -365,9 +365,9 @@ class ProspectSpawner(object):
         if sum(scaled_probabilities) > 1:
             scaled_probabilities[0] -= sum(scaled_probabilities)-1
 
-        # untranslated sizes
+        # TODO maybe include option to have different distribution of sizes
+        # see notes.md
         untranslated_sizes = []
-
         if target_e == 0:
             for _ in range(self.n_outcomes):
                 untranslated_sizes.append(
@@ -385,14 +385,11 @@ class ProspectSpawner(object):
         # compute the difference and subtract it from the untranslated sizes
         difference = actual_e - target_e
 
-        translated_sizes = []
-        for size in untranslated_sizes:
-            translated_sizes.append(size - difference)
+        translated_sizes = list(
+            map(lambda size: size - difference, untranslated_sizes))
 
-        outcomes = []
-        # add Outcomes with computed sizes and probabilites to the Prospect
-        for prob, size in zip(scaled_probabilities, translated_sizes):
-            outcomes.append(Outcome(probability=prob, size=size))
+        outcomes = [Outcome(probability=prob, size=size) for prob, size in zip(
+            scaled_probabilities, translated_sizes)]
 
         prospect = Prospect(outcomes=outcomes)
         return prospect
