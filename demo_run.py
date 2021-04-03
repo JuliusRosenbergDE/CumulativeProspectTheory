@@ -13,7 +13,9 @@ env1.set_env_props(
 # set the environments barrier
 env1.set_barrier(
     barrier=Barrier(
-        speed=0
+        speed=0,
+        movement="random",
+        move_distribution=expon(loc=1, scale=2)
     )
 )
 
@@ -21,9 +23,10 @@ env1.set_barrier(
 env1.set_prospect_spawner(
     prospect_spawner=ProspectSpawner(
         n_outcomes=2,
-        expected_value=-1.5,
+        expected_value=-0.5,
         noisy=True,
         noisy_sd=1,
+        size_distribution=expon(loc=-1.5, scale=3)
     )
 )
 
