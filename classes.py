@@ -4,6 +4,8 @@ import numpy as np
 import matplotlib.gridspec as gridspec
 import random
 import statistics  # for median
+from scipy.stats import norm  # normal distribution
+from scipy.stats import expon  # exponential distribution
 
 
 class Outcome(object):
@@ -242,7 +244,7 @@ class Individual(object):
 
 class Barrier(object):
     # set params for barrier
-    def __init__(self, *, speed: float = 0.5, distribution: str = 'static', distribution_params: dict = {'sd': 1}):
+    def __init__(self, *, speed: float = 0.5, movement: str = 'static', move_distribution=None):
         """set the parameters for the barrier
 
         Args:
@@ -251,28 +253,21 @@ class Barrier(object):
             distribution_params (dict, optional): sd specifies the standard deviation. Defaults to {'sd': 1}.
         """
         self.speed = speed
-        self.distribution = distribution
-        self.distribution_params = distribution_params
-        self.distribution_params['mean'] = self.speed
+        self.movement = movement
         self.start_position = 0
         self.position = 0
         self.last_leap_size = 0
+        self.move_distribution = move_distribution
 
     # move barrier according to parameters
     def move(self):
 
         # deterministic movement
-        if self.distribution == 'static':
+        if self.movement == 'static':
             increment = self.speed
-        # normally distributed movement
-        elif self.distribution == 'normal':
-            increment = np.random.normal(
-                loc=self.distribution_params['mean'], scale=self.distribution_params['sd'])
-        # log-normally distributed movement
-        elif self.distribution == 'log-normal':
-            # expected value of a (1,1) is 4.41817
-            increment = np.random.lognormal(
-                mean=self.distribution_params['mean'], sigma=self.distribution_params['sd'])
+        # randomly distributed movement
+        elif self.movement == "random":
+            increment = self.move_distribution.rvs()
 
         # update the position of the barrier
         self.position += increment
@@ -313,7 +308,7 @@ class Statistics(object):
 
 
 class ProspectSpawner(object):
-    def __init__(self, *, n_outcomes: int = 2, noisy: bool = False, noisy_sd: float = 1, expected_value: float = 0):
+    def __init__(self, *, n_outcomes: int = 2, noisy: bool = False, noisy_sd: float = 1, expected_value: float = 0, size_distribution=None):
         """sets all relevant parameters of the prospect spawner
 
         Args:
@@ -321,11 +316,13 @@ class ProspectSpawner(object):
             noisy (bool, optional): If set to True, expected value of generated prospects is drawn from a probability distribution. Defaults to False.
             noisy_sd (float, optional): If noisy is set to True, this specifies the standard deviation of the probability distribution the prospects expected value is drawn from. Defaults to 1.
             expected_value (float, optional): The expected value for the prospect spawner. Defaults to 0.
+            size_distribution (scipy.stats.rv_continuous) distribution object used to generate random sizes with rvs() method
         """
         self.n_outcomes = n_outcomes
         self.noisy = noisy
         self.noisy_sd = noisy_sd
         self.expected_value = expected_value
+        self.size_distribution = size_distribution
 
     # creates and returns a random prospect
     def generate_prospect(self, *, expected_value: float = None):
@@ -365,19 +362,9 @@ class ProspectSpawner(object):
         if sum(scaled_probabilities) > 1:
             scaled_probabilities[0] -= sum(scaled_probabilities)-1
 
-        # TODO maybe include option to have different distribution of sizes
-        # see notes.md
-        untranslated_sizes = []
-        if target_e == 0:
-            for _ in range(self.n_outcomes):
-                untranslated_sizes.append(
-                    np.random.normal(loc=target_e, scale=2))  # TODO this is arbitrary, however, target_e is hardly ever == 0
-        elif target_e != 0:
-            for _ in range(self.n_outcomes):
-                untranslated_sizes.append(
-                    np.random.normal(loc=target_e, scale=abs(target_e)))
+        untranslated_sizes = self.generate_sizes(
+            target_e=target_e, n=self.n_outcomes)
 
-        # compute actual e to translate sizes for reaching target_e
         actual_e = 0
         for prob, size in zip(scaled_probabilities, untranslated_sizes):
             actual_e += prob * size
@@ -393,6 +380,9 @@ class ProspectSpawner(object):
 
         prospect = Prospect(outcomes=outcomes)
         return prospect
+
+    def generate_sizes(self, *, target_e: float, n: int):
+        return self.size_distribution.rvs(size=n)
 
 
 class Environment(object):
@@ -702,15 +692,14 @@ class PopulationGrapher(object):
             # barrier type
             # barrier speed
             # barrier sd
-
             # spawner noisy
             # spawner expected
             # spawner sd
-
             # construct title
+            # TODO: maybe update some title things, since distributions where modified
             text_heading = "Setup:"
             text_env = f'initial preferences: {self.environment.initial_preferences}, spawn variation: {self.environment.spawn_variation}, max size: {self.environment.max_size}'
-            text_barrier = f'barrier/ -type: {self.environment.barrier.distribution}, -speed: {self.environment.barrier.speed}, -sd: {self.environment.barrier.distribution_params["sd"]}'
+            text_barrier = f'barrier/ -type: {self.environment.barrier.movement}, -speed: {self.environment.barrier.speed}, -sd: {(self.environment.barrier.move_distribution.std(), "none")[self.environment.barrier.move_distribution is None]} '
             text_prospect_spawner = f'prospects/ -noisy: {self.environment.prospect_spawner.noisy}, -expected value: {self.environment.prospect_spawner.expected_value}, -sd: {self.environment.prospect_spawner.noisy_sd}'
 
             text = text_heading + "\n" + text_env + "\n" + \
