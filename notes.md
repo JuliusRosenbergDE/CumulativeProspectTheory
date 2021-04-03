@@ -27,8 +27,8 @@ class ideas:
 
 
 features:
-    - reproduction hierarchy
     - Prospect spawner randomness type
+    - reproduction hierarchy
     - statistics every
     - graph every
     - cemetery
