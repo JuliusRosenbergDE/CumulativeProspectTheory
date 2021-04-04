@@ -135,7 +135,7 @@ class Individual(object):
         self.prospects_to_choose_from = []
 
         self.value_function = ValueFunction(
-            lampda=self.lampda, alpha=self.alpha, beta=self.beta)  # NOTE this enforces alpha = beta
+            lampda=self.lampda, alpha=self.alpha, beta=self.beta)
         self.weighting_function = WeightingFunction(
             gamma=self.gamma, delta=self.delta)
 
