@@ -8,7 +8,9 @@ env1.set_env_props(
     initial_size=500,
     max_size=500,
     spawn_variation=0.02,
-    initial_preferences='mixed')
+    initial_preferences='mixed',
+    reproduction_hierarchy='medium'
+)
 
 # set the environments barrier
 env1.set_barrier(

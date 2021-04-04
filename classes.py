@@ -399,7 +399,7 @@ class Environment(object):
         self.good_times = True
 
     # set up parameters of environment
-    def set_env_props(self, *, initial_individual_position: int = 1, initial_size: int = 100, max_size: int = 100, spawn_variation: float = 0.1, initial_preferences: str = "mixed"):
+    def set_env_props(self, *, initial_individual_position: int = 1, initial_size: int = 100, max_size: int = 100, spawn_variation: float = 0.1, initial_preferences: str = "mixed", reproduction_hierarchy: str = 'flat'):
         """sets relevant properties of the environment
 
         Args:
@@ -410,6 +410,7 @@ class Environment(object):
             initial_preferences (str, optional): "mixed" referes to even odds for rational and prospect preferences.
             Rational preferences refers to all parameters of the individual being equal to one.
             Prospect preferences refer to parameters of the individual as measured by Kahneman and Tversky. Defaults to "mixed".
+            reproduction_hierarchy (str, optional): how, among the surviving individuals, the ones allowed to reproduce are chosen
         """
 
         self.initial_preferences = initial_preferences
@@ -417,6 +418,7 @@ class Environment(object):
         self.spawn_variation = spawn_variation
         self.initial_size = initial_size
         self.max_size = max_size
+        self.reproduction_hierarchy = reproduction_hierarchy
 
     def set_prospect_spawner(self, *, prospect_spawner: ProspectSpawner):
         """links a PropsectSpawner instance to the environment
@@ -529,12 +531,29 @@ class Environment(object):
     def reproduce(self):
         """let randomly chosen individuals reproduce until the maximum population size is reached
         """
-        while len(self.individuals) < self.max_size:
-            random_alive_individual = random.choice(self.individuals)
-            new_individual = random_alive_individual.reproduce(
-                spawn_variation=self.spawn_variation,
-                spawn_position=self.barrier.position + self.initial_individual_position)
-            self.individuals.append(new_individual)
+        # calculate how many new individuals can join
+        free_places = self.max_size - len(self.individuals)
+
+        # this is the medium hierarchy reproduction
+        # use the positions as proxy for chance of reproduction
+        positions = [individual.position for individual in self.individuals]
+        # TODO here it may be neccessary to correct the sum, if its not exactly one
+        reproduction_probs = positions/sum(positions)
+
+        # medium hierarchy
+        if self.reproduction_hierarchy == 'medium':
+            reproducing_individuals = list(np.random.choice(
+                self.individuals, free_places, p=reproduction_probs))
+        # flat hierarchy
+        elif self.reproduction_hierarchy == 'flat':
+            reproducing_individuals = list(np.random.choice(
+                self.individuals, free_places))
+
+        new_individuals = [individual.reproduce(
+            spawn_variation=self.spawn_variation,
+            spawn_position=self.barrier.position + self.initial_individual_position
+        ) for individual in reproducing_individuals]
+        self.individuals += new_individuals
 
     def create_statistics(self):
         """create statistics for the current state of the environment
