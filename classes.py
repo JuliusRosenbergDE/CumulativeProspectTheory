@@ -679,8 +679,9 @@ class PopulationGrapher(object):
             plt.style.use('seaborn')
 
             # create one figure for all stats
-            self.fig_all = plt.figure(constrained_layout=True)
-            gs = self.fig_all.add_gridspec(12, 4)
+            self.fig_all = plt.figure(constrained_layout=False)
+            # gs = self.fig_all.add_gridspec(12, 4)
+            gs = self.fig_all.add_gridspec(15, 4)
 
             # first construc the title, then set it
             # title contains:
@@ -705,22 +706,22 @@ class PopulationGrapher(object):
             text = text_heading + "\n" + text_env + "\n" + \
                 text_barrier + "\n" + text_prospect_spawner
             # set title
-            self.fig_all.suptitle(text, fontsize=12)
+            self.fig_all.suptitle(text, fontsize=10)
 
             # organize plots with gridspace
             # gs[row,col]
-            self.hist_alpha = self.fig_all.add_subplot(gs[0:4, 0:1])
+            self.hist_alpha = self.fig_all.add_subplot(gs[1:5, 0:1])
             self.hist_alpha.set_title('alpha')
-            self.hist_beta = self.fig_all.add_subplot(gs[4:8, 0:1])
+            self.hist_beta = self.fig_all.add_subplot(gs[6:10, 0:1])
             self.hist_beta.set_title('beta')
-            self.hist_lampda = self.fig_all.add_subplot(gs[8:12, 0:1])
+            self.hist_lampda = self.fig_all.add_subplot(gs[11:15, 0:1])
             self.hist_lampda.set_title('lambda')
 
-            self.hist_gamma = self.fig_all.add_subplot(gs[0:4, 1:2])
+            self.hist_gamma = self.fig_all.add_subplot(gs[1:5, 1:2])
             self.hist_gamma.set_title('gamma')
-            self.hist_delta = self.fig_all.add_subplot(gs[4:8, 1:2])
+            self.hist_delta = self.fig_all.add_subplot(gs[6:10, 1:2])
             self.hist_delta.set_title('delta')
-            self.hist_position = self.fig_all.add_subplot(gs[8:12, 1:2])
+            self.hist_position = self.fig_all.add_subplot(gs[11:15, 1:2])
             self.hist_position.set_title('position')
 
             self.time_alpha_beta = self.fig_all.add_subplot(gs[0:3, 2:5])
@@ -730,14 +731,14 @@ class PopulationGrapher(object):
             self.time_alpha_beta.axhline(
                 0.88, linestyle='dotted', linewidth=1.5, color=self.PROSPECT_COLOR)
 
-            self.time_lampda = self.fig_all.add_subplot(gs[3:6, 2:5])
+            self.time_lampda = self.fig_all.add_subplot(gs[4:7, 2:5])
             self.time_lampda.set_title('Median over time')
             self.time_lampda.axhline(
                 1, linestyle='dotted', linewidth=1.5, color=self.RATIONAL_COLOR)
             self.time_lampda.axhline(
                 2.25, linestyle='dotted', linewidth=1.5, color=self.PROSPECT_COLOR)
 
-            self.time_gamma_delta = self.fig_all.add_subplot(gs[6:9, 2:5])
+            self.time_gamma_delta = self.fig_all.add_subplot(gs[8:11, 2:5])
             self.time_gamma_delta.set_title('Median over time')
             self.time_gamma_delta.axhline(
                 1, linestyle='dotted', linewidth=1.5, color=self.RATIONAL_COLOR)
@@ -746,7 +747,7 @@ class PopulationGrapher(object):
             self.time_gamma_delta.axhline(
                 0.69, linestyle='dotted', linewidth=1.5, color=self.PROSPECT_COLOR)
 
-            self.time_alive = self.fig_all.add_subplot(gs[9:12, 2:5])
+            self.time_alive = self.fig_all.add_subplot(gs[12:15, 2:5])
             self.time_alive.set_title('Population size over time')
             self.time_alive.axhline(
                 self.environment.initial_size, color='gray')
