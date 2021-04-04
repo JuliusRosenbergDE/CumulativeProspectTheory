@@ -126,7 +126,7 @@ class Individual(object):
         """
         self.lampda = lampda
         self.alpha = alpha
-        self.beta = alpha  # NOTE this enforces alpha = beta, as done by Kahneman and Tversky for cumulative prospect theory
+        self.beta = beta  # NOTE alpha and beta are different, maybe an option to enforce them to be equal is needed
         self.gamma = gamma
         self.delta = delta
         self.position = position
@@ -135,7 +135,7 @@ class Individual(object):
         self.prospects_to_choose_from = []
 
         self.value_function = ValueFunction(
-            lampda=self.lampda, alpha=self.alpha, beta=self.alpha)  # NOTE this enforces alpha = beta
+            lampda=self.lampda, alpha=self.alpha, beta=self.beta)  # NOTE this enforces alpha = beta
         self.weighting_function = WeightingFunction(
             gamma=self.gamma, delta=self.delta)
 
