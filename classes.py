@@ -538,7 +538,8 @@ class Environment(object):
         # use the positions as proxy for chance of reproduction
         positions = [individual.position for individual in self.individuals]
         # TODO here it may be neccessary to correct the sum, if its not exactly one
-        reproduction_probs = positions/sum(positions)
+        total = sum(positions)
+        reproduction_probs = [position/total for position in positions]
 
         # medium hierarchy
         if self.reproduction_hierarchy == 'medium':
@@ -719,6 +720,7 @@ class PopulationGrapher(object):
             # TODO: maybe update some title things, since distributions where modified
             text_heading = "Setup:"
             text_env = f'initial preferences: {self.environment.initial_preferences}, spawn variation: {self.environment.spawn_variation}, max size: {self.environment.max_size}'
+            # TODO make the title robust to all kinds of barriers
             text_barrier = f'barrier/ -type: {self.environment.barrier.movement}, -speed: {self.environment.barrier.speed}, -sd: {(self.environment.barrier.move_distribution.std(), "none")[self.environment.barrier.move_distribution is None]} '
             text_prospect_spawner = f'prospects/ -noisy: {self.environment.prospect_spawner.noisy}, -expected value: {self.environment.prospect_spawner.expected_value}, -sd: {self.environment.prospect_spawner.noisy_sd}'
 
